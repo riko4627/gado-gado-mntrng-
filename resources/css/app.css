@@ -1,0 +1,83 @@
+@import 'tailwindcss';
+
+/* Manual Dark Mode Strategy for Tailwind 4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-primary: #001f3f;
+    --color-primary-light: #003366;
+    --color-accent: #3b82f6;
+    --color-background-light: #f8fafc;
+    --color-background-dark: #0f172a;
+    --color-surface-dark: #1e293b;
+    --color-sidebar-text: var(--sidebar-text);
+    --color-sidebar-bg: var(--sidebar-bg);
+    --color-bg-main: var(--bg-main);
+    --color-text-main: var(--text-main);
+}
+
+@layer base {
+    :root {
+        --bg-main: var(--color-background-light);
+        --text-main: #1e293b;
+        --sidebar-bg: var(--color-primary);
+        --sidebar-text: #ffffff;
+    }
+
+    .dark {
+        --bg-main: var(--color-background-dark);
+        --text-main: #f8fafc;
+        --sidebar-bg: #020617;
+        --sidebar-text: #f8fafc;
+    }
+
+    body {
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+}
+
+@layer components {
+    /* Premium Animations and Micro-interactions */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.4s ease-out forwards;
+    }
+
+    .glass {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .dark .glass {
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-link {
+        @apply flex items-center px-4 py-3 rounded-xl transition-all duration-200 text-sidebar-text/80 hover:text-sidebar-text hover:bg-white/10;
+    }
+
+    .sidebar-link.active {
+        @apply bg-white/10 text-sidebar-text shadow-lg;
+    }
+
+    .card-premium {
+        @apply bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 transition-all duration-300 hover:shadow-md;
+    }
+}
+
