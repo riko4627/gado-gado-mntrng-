@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'kinexa' => [
+        'base_url' => env('KINEXA_BASE_URL'),
+        'api_key' => env('KINEXA_API_KEY'),
+        'api_secret' => env('KINEXA_API_SECRET'),
+    ],
+
 ];
