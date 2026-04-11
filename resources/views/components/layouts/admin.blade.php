@@ -24,4 +24,50 @@
             </footer>
         </div>
     </div>
+
+    <!-- ✅ SCRIPT TARUH DI SINI -->
+    <script>
+        function toggleMonitoring() {
+            const menu = document.getElementById('menu-monitoring');
+            const icon = document.getElementById('icon-monitoring');
+
+            if (menu && icon) {
+                menu.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            }
+        }
+
+        async function checkStatus() {
+            const proyektor = document.getElementById('status-proyektor');
+            const kinexa = document.getElementById('status-kinexa');
+
+            // kalau element tidak ada, skip (biar aman)
+            if (!proyektor || !kinexa) return;
+
+            // PROYEKTOR
+            try {
+                const res = await fetch('https://proyektor.uwn.ac.id/api/stats');
+                if (res.ok) {
+                    proyektor.className = 'text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400';
+                } else throw new Error();
+            } catch {
+                proyektor.className = 'text-[10px] px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400';
+            }
+
+            // KINEXA
+            try {
+                const res = await fetch('/admin/kinexa/summary');
+                const json = await res.json();
+
+                if (json.status === 'success') {
+                    kinexa.className = 'text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400';
+                } else throw new Error();
+            } catch {
+                kinexa.className = 'text-[10px] px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', checkStatus);
+    </script>
+
 </x-layouts.app>
