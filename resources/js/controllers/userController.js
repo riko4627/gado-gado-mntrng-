@@ -103,6 +103,7 @@ export const UserController = {
     },
 
     async fetchUsers() {
+        console.log('UserController: fetchUsers called');
         // Optional: show loading state
         this.tableBody.style.opacity = '0.5';
         
@@ -114,12 +115,15 @@ export const UserController = {
             };
             
             const result = await UserService.getAll(params);
+            console.log('UserController: UserService.getAll result', result);
             
             if (result.code === 200) {
                 this.renderTable(result.data.data);
                 this.renderPagination(result.data);
+                console.log('UserController: Table and pagination rendered');
             }
         } catch (error) {
+            console.error('UserController: FetchUsers Error:', error);
             this.showToast('Gagal memuat data', 'error');
         } finally {
             this.tableBody.style.opacity = '1';
@@ -141,7 +145,8 @@ export const UserController = {
         const colors = ['blue', 'purple', 'emerald', 'orange', 'rose', 'amber'];
         
         this.tableBody.innerHTML = users.map(user => {
-            const charCodeSum = user.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const userIdStr = String(user.id);
+            const charCodeSum = userIdStr.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
             const color = colors[charCodeSum % colors.length];
             const initial = user.name.charAt(0).toUpperCase();
 
@@ -293,18 +298,23 @@ export const UserController = {
         };
 
         try {
+            console.log('UserController: handleFormSubmit data', data);
             const result = id 
                 ? await UserService.update(id, data) 
                 : await UserService.create(data);
             
+            console.log('UserController: handleFormSubmit result', result);
+            
             if (result.code === 200) {
                 this.showToast(id ? 'User berhasil diperbarui' : 'User berhasil dibuat', 'success');
                 this.closeModal();
+                console.log('UserController: Calling fetchUsers for reload');
                 this.fetchUsers(); // Refresh table without full reload
             } else {
                 this.showToast(result.message || 'Gagal menyimpan data', 'error');
             }
         } catch (error) {
+            console.error('UserController: handleFormSubmit catch error', error);
             this.showToast('Terjadi kesalahan koneksi', 'error');
         }
     },
