@@ -8,6 +8,7 @@ use App\Http\Controllers\TemplateController;
 Route::get('/', [TemplateController::class, 'home']);
 Route::get('/admin', [TemplateController::class, 'dashboard']);
 Route::get('/admin/users', [TemplateController::class, 'users']);
+Route::get('/admin/proyektor', [TemplateController::class, 'proyektor']);
 
 Route::prefix('v1')->group(function () {
     Route::prefix('user')->controller(UserController::class)->group(function () {
