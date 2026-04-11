@@ -30,5 +30,10 @@ class TemplateController extends Controller
         $users = $this->userRepo->getAllData($request);
         return view('admin.users', compact('users'));
     }
+
+    public function proyektor()
+    {
+        return view('admin.proyektor');
+    }
 }
 
