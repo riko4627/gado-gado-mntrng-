@@ -5,14 +5,17 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Repositories\UserRepositories;
+use App\Repositories\KinexaRepositories;
 
 class TemplateController extends Controller
 {
     protected $userRepo;
+    protected $kinexaRepo;
 
-    public function __construct(UserRepositories $userRepo)
+    public function __construct(UserRepositories $userRepo, KinexaRepositories $kinexaRepo)
     {
         $this->userRepo = $userRepo;
+        $this->kinexaRepo = $kinexaRepo;
     }
 
     public function home()
@@ -34,6 +37,17 @@ class TemplateController extends Controller
     public function proyektor()
     {
         return view('admin.proyektor');
+    }
+
+    public function kinexa()
+    {
+        return view('admin.kinexa');
+    }
+
+    public function kinexaSummary()
+    {
+        $data = $this->kinexaRepo->getPegawaiSummary();
+        return response()->json($data);
     }
 }
 
