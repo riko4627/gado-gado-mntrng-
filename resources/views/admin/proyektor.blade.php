@@ -116,15 +116,25 @@
 
     <script>
         async function fetchProjectorStats() {
+
+            const statusLabel = document.getElementById('proyektor-status');
+
+            const statusLabel = document.getElementById('proyektor-status');
+            const refreshBtn = document.getElementById('refresh-stats');
+            const refreshIcon = document.getElementById('refresh-icon');
+            const errorMessage = document.getElementById('error-message');
+            const statsContainer = document.getElementById('stats-container');
+            const card1 = document.getElementById('card1');
+            const card2 = document.getElementById('card2');
+            const card3 = document.getElementById('card3');
+
             const elements = {
                 total_proyektor: document.getElementById('total_proyektor'),
                 total_proyektor_rusak: document.getElementById('total_proyektor_rusak'),
                 total_pengguna: document.getElementById('total_pengguna')
             };
-            const refreshBtn = document.getElementById('refresh-stats');
-            const refreshIcon = document.getElementById('refresh-icon');
-            const errorMessage = document.getElementById('error-message');
-            const statsContainer = document.getElementById('stats-container');
+
+
 
             // Reset states
             errorMessage.classList.add('hidden');
@@ -132,8 +142,16 @@
             refreshIcon.classList.add('animate-spin');
             refreshBtn.disabled = true;
 
-            // Set loading state
-            Object.values(elements).forEach(el => el.textContent = '...');
+            statusLabel.innerHTML =
+                '<span class="w-2 h-2 rounded-full bg-slate-400 animate-pulse"></span>Menghubungkan...';
+            statusLabel.className =
+                'flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-full transition-all';
+
+            // Show skeletons
+            card1.style.display = 'block';
+            card2.style.display = 'block';
+            card3.style.display = 'block';
+
 
             try {
                 // Fetch from external API
@@ -144,16 +162,35 @@
                 const json = await response.json();
                 const data = json.data;
 
-                // Update UI with real data
+
+                // Update UI with real data - Hide skeletons, show data
+                card1.style.display = 'none';
+                card2.style.display = 'none';
+                card3.style.display = 'none';
+
+                elements.total_proyektor.style.display = 'block';
+                elements.total_proyektor_rusak.style.display = 'block';
+                elements.total_pengguna.style.display = 'block';
+
                 elements.total_proyektor.textContent = (data.total_proyektor ?? 0).toLocaleString();
                 elements.total_proyektor_rusak.textContent = (data.total_proyektor_rusak ?? 0).toLocaleString();
                 elements.total_pengguna.textContent = (data.total_pengguna ?? 0).toLocaleString();
 
+                statusLabel.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span>Terhubung';
+                statusLabel.className =
+                    'flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 rounded-full transition-all';
+
+
             } catch (error) {
+
                 console.error('Fetch error:', error);
                 errorMessage.classList.remove('hidden');
                 statsContainer.classList.add('opacity-50');
-                Object.values(elements).forEach(el => el.textContent = '!');
+
+                statusLabel.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500"></span>Error';
+                statusLabel.className =
+                    'flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider bg-rose-500/10 text-rose-600 rounded-full transition-all';
+
             } finally {
                 refreshIcon.classList.remove('animate-spin');
                 refreshBtn.disabled = false;
