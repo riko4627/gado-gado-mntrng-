@@ -7,47 +7,41 @@
                     Proyektor</h1>
                 <p class="text-slate-600 dark:text-slate-400">Data real-time dari sistem proyektor terintegrasi.</p>
             </div>
-
             <div class="flex items-center gap-3">
-                <div id="proyektor-status"
-                    class="flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-full transition-all">
-                    <span class="w-2 h-2 rounded-full bg-slate-400 animate-pulse"></span>
-                    Menghubungkan...
-                </div>
                 <button id="refresh-stats"
-                    class="p-2 text-slate-600 dark:text-slate-400 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm">
-                    <svg id="refresh-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="px-4 py-2 text-sm font-medium bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2">
+                    <svg id="refresh-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
                         </path>
                     </svg>
+                    Segarkan Data
                 </button>
             </div>
-
         </div>
-
 
         <!-- Stats Grid -->
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3" id="stats-container">
-            <!-- Loading Skeleton - First Card -->
-            <div id="card1" class="card-premium p-6 animate-pulse">
-                <div class="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl mb-4"></div>
-                <div class="h-4 w-24 bg-slate-100 dark:bg-slate-800 rounded mb-3"></div>
-                <div class="h-8 w-20 bg-slate-100 dark:bg-slate-800 rounded"></div>
+            <!-- Total Proyektor -->
+            <div class="card-premium p-6 flex flex-col gap-4 relative overflow-hidden group">
+                <div class="flex items-center justify-between relative z-10">
+                    <div class="p-3 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="relative z-10">
+                    <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Total Proyektor</p>
+                    <h3 id="total_proyektor" class="text-3xl font-bold text-slate-900 dark:text-white transition-all">
+                        ...</h3>
+                </div>
+                <div
+                    class="absolute -right-4 -bottom-4 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-colors">
+                </div>
             </div>
-            <!-- Loading Skeleton - Second Card -->
-            <div id="card2" class="card-premium p-6 animate-pulse">
-                <div class="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl mb-4"></div>
-                <div class="h-4 w-24 bg-slate-100 dark:bg-slate-800 rounded mb-3"></div>
-                <div class="h-8 w-20 bg-slate-100 dark:bg-slate-800 rounded"></div>
-            </div>
-            <!-- Loading Skeleton - Third Card -->
-            <div id="card3" class="card-premium p-6 animate-pulse">
-                <div class="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl mb-4"></div>
-                <div class="h-4 w-24 bg-slate-100 dark:bg-slate-800 rounded mb-3"></div>
-                <div class="h-8 w-20 bg-slate-100 dark:bg-slate-800 rounded"></div>
-            </div>
-
 
             <!-- Proyektor Rusak -->
             <div class="card-premium p-6 flex flex-col gap-4 relative overflow-hidden group">
@@ -117,16 +111,9 @@
     <script>
         async function fetchProjectorStats() {
 
-            const statusLabel = document.getElementById('proyektor-status');
-
-            const statusLabel = document.getElementById('proyektor-status');
             const refreshBtn = document.getElementById('refresh-stats');
             const refreshIcon = document.getElementById('refresh-icon');
             const errorMessage = document.getElementById('error-message');
-            const statsContainer = document.getElementById('stats-container');
-            const card1 = document.getElementById('card1');
-            const card2 = document.getElementById('card2');
-            const card3 = document.getElementById('card3');
 
             const elements = {
                 total_proyektor: document.getElementById('total_proyektor'),
@@ -134,63 +121,25 @@
                 total_pengguna: document.getElementById('total_pengguna')
             };
 
-
-
-            // Reset states
             errorMessage.classList.add('hidden');
-            statsContainer.classList.remove('opacity-50');
             refreshIcon.classList.add('animate-spin');
             refreshBtn.disabled = true;
 
-            statusLabel.innerHTML =
-                '<span class="w-2 h-2 rounded-full bg-slate-400 animate-pulse"></span>Menghubungkan...';
-            statusLabel.className =
-                'flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-full transition-all';
-
-            // Show skeletons
-            card1.style.display = 'block';
-            card2.style.display = 'block';
-            card3.style.display = 'block';
-
-
             try {
-                // Fetch from external API
                 const response = await fetch('https://proyektor.uwn.ac.id/api/stats');
 
-                if (!response.ok) throw new Error('Network response was not ok');
+                if (!response.ok) throw new Error('Gagal fetch API');
 
                 const json = await response.json();
-                const data = json.data;
-
-
-                // Update UI with real data - Hide skeletons, show data
-                card1.style.display = 'none';
-                card2.style.display = 'none';
-                card3.style.display = 'none';
-
-                elements.total_proyektor.style.display = 'block';
-                elements.total_proyektor_rusak.style.display = 'block';
-                elements.total_pengguna.style.display = 'block';
+                const data = json.data || {};
 
                 elements.total_proyektor.textContent = (data.total_proyektor ?? 0).toLocaleString();
                 elements.total_proyektor_rusak.textContent = (data.total_proyektor_rusak ?? 0).toLocaleString();
                 elements.total_pengguna.textContent = (data.total_pengguna ?? 0).toLocaleString();
 
-                statusLabel.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span>Terhubung';
-                statusLabel.className =
-                    'flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 rounded-full transition-all';
-
-
             } catch (error) {
-
                 console.error('Fetch error:', error);
                 errorMessage.classList.remove('hidden');
-                statsContainer.classList.add('opacity-50');
-
-                statusLabel.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500"></span>Error';
-                statusLabel.className =
-                    'flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider bg-rose-500/10 text-rose-600 rounded-full transition-all';
-
             } finally {
                 refreshIcon.classList.remove('animate-spin');
                 refreshBtn.disabled = false;
