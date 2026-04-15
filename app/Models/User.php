@@ -10,26 +10,18 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasUuids;
+    use HasApiTokens, HasFactory, Notifiable, HasUuids;
 
-    /**
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
         'role',
         'password',
-
+        'google_id',
     ];
 
-    /**
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
-
-   
 }

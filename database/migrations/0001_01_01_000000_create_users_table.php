@@ -16,7 +16,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->enum('role', ['super_admin', 'admin', 'user'])->default('user');
-            $table->string('password');
+
+            // MODIFIKASI DISINI:
+            $table->string('google_id')->nullable()->unique(); // Untuk simpan ID unik dari Google
+            $table->string('password')->nullable(); // Dibuat nullable agar user Google bisa lewat
+
             $table->rememberToken();
             $table->timestamps();
         });

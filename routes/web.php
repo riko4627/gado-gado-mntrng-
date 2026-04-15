@@ -1,23 +1,56 @@
 <?php
 
 use App\Http\Controllers\CMS\UserController;
+use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\TemplateController;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\TemplateController;
+// =====================
+// PUBLIC (tidak perlu login)
+// =====================
 
 Route::get('/', [TemplateController::class, 'home']);
-Route::get('/admin', [TemplateController::class, 'dashboard']);
-Route::get('/admin/users', [TemplateController::class, 'users']);
-Route::get('/admin/proyektor', [TemplateController::class, 'proyektor']);
-Route::get('/admin/kinexa', [TemplateController::class, 'kinexa']);
-Route::get('/admin/kinexa/summary', [TemplateController::class, 'kinexaSummary']);
 
-Route::prefix('v1')->group(function () {
-    Route::prefix('user')->controller(UserController::class)->group(function () {
-        Route::get('/', 'index');
-        Route::post('/create', 'createData');
-        Route::get('/get/{id}', 'getDataById');
-        Route::post('/update/{id}', 'updateData');
-        Route::delete('/delete/{id}', 'deleteData');
+Route::get('/login', [TemplateController::class, 'login'])->name('login');
+
+// (opsional, bisa dihapus kalau sudah tidak dipakai)
+Route::get('/auth/callback', [TemplateController::class, 'authCallback']);
+
+// Google OAuth (HARUS public)
+Route::prefix('v1/auth')->controller(GoogleAuthController::class)->group(function () {
+    Route::get('/google', 'redirectToProvider');
+    Route::get('/google/callback', 'handleProviderCallback');
+});
+
+
+// =====================
+// PROTECTED (WAJIB LOGIN)
+// =====================
+
+Route::middleware(['auth'])->group(function () {
+
+    // Dashboard
+    Route::get('/admin', [TemplateController::class, 'dashboard']);
+
+    Route::get('/admin/users', [TemplateController::class, 'users']);
+    Route::get('/admin/proyektor', [TemplateController::class, 'proyektor']);
+    Route::get('/admin/kinexa', [TemplateController::class, 'kinexa']);
+    Route::get('/admin/kinexa/summary', [TemplateController::class, 'kinexaSummary']);
+
+    Route::prefix('v1')->group(function () {
+
+        // Logout (pakai POST)
+        Route::prefix('auth')->controller(GoogleAuthController::class)->group(function () {
+            Route::post('/logout', 'logout');
+        });
+
+        // User CRUD
+        Route::prefix('user')->controller(UserController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::post('/create', 'createData');
+            Route::get('/get/{id}', 'getDataById');
+            Route::post('/update/{id}', 'updateData');
+            Route::delete('/delete/{id}', 'deleteData');
+        });
     });
 });

@@ -49,5 +49,15 @@ class TemplateController extends Controller
         $data = $this->kinexaRepo->getPegawaiSummary();
         return response()->json($data);
     }
+
+    public function login()
+    {
+        return view('auth.login');
+    }
+
+    public function authCallback()
+    {
+        return view('auth.callback');
+    }
 }
 
