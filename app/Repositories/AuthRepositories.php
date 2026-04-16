@@ -15,9 +15,14 @@ class AuthRepositories implements AuthInterfaces
         $this->user = $user;
     }
 
-
-
-    public function findOrCreateUser($socialUser, $provider)
+    /**
+     * Cari user berdasarkan google_id atau email.
+     * - Jika user BARU → simpan dengan status 'pending', kembalikan null
+     * - Jika user LAMA → update google_id, kembalikan user (status dicek di controller)
+     *
+     * @return User|null
+     */
+    public function findOrCreateUser($socialUser, $provider): ?User
     {
         $email = $socialUser->getEmail();
 
@@ -30,19 +35,24 @@ class AuthRepositories implements AuthInterfaces
             ->first();
 
         if ($user) {
+            // Update google_id jika belum tersimpan
             $user->update([
                 'google_id' => $socialUser->getId(),
             ]);
             return $user;
         }
 
-        return $this->user->create([
+        // User baru → simpan sebagai pending, JANGAN login
+        $this->user->create([
             'name'      => $socialUser->getName() ?? 'User Google',
             'email'     => $email,
             'google_id' => $socialUser->getId(),
             'role'      => 'user',
+            'status'    => 'pending',
             'password'  => bcrypt(str()->random(16)),
         ]);
+
+        return null; // null = user baru, perlu approval
     }
 
     public function createToken($user)

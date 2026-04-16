@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CMS\UserController;
+use App\Http\Controllers\CMS\ApprovalController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\TemplateController;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +38,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/kinexa', [TemplateController::class, 'kinexa']);
     Route::get('/admin/kinexa/summary', [TemplateController::class, 'kinexaSummary']);
 
+    // ─── Super Admin: Approval Management ──────────────────────────────────
+    Route::middleware(['role:super_admin'])->group(function () {
+        Route::get('/admin/approvals', [TemplateController::class, 'approvals'])->name('admin.approvals');
+    });
+
     Route::prefix('v1')->group(function () {
 
         // Logout (pakai POST)
@@ -51,6 +57,12 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/get/{id}', 'getDataById');
             Route::post('/update/{id}', 'updateData');
             Route::delete('/delete/{id}', 'deleteData');
+        });
+
+        // ─── Super Admin: Approval Actions ─────────────────────────────────
+        Route::middleware(['role:super_admin'])->prefix('admin')->controller(ApprovalController::class)->group(function () {
+            Route::post('/approve/{id}', 'approve')->name('admin.approve');
+            Route::post('/reject/{id}', 'reject')->name('admin.reject');
         });
     });
 });

@@ -31,20 +31,50 @@
                             Google Anda</p>
                     </div>
 
-                    <!-- Auth Error Notification (Optional) -->
-                    @if (request()->get('error'))
+                    {{-- ── Status Notifications ─────────────────────────────── --}}
+                    @if (session('status') === 'pending')
                         <div
-                            class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center gap-3 text-rose-600 animate-shake">
-                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-3 text-amber-600">
+                            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <p class="text-xs font-bold">Menunggu Persetujuan</p>
+                                <p class="text-xs mt-0.5 opacity-80">Akun Anda telah terdaftar dan sedang menunggu
+                                    persetujuan dari administrator. Silahkan coba lagi nanti.</p>
+                            </div>
+                        </div>
+                    @elseif (session('status') === 'rejected')
+                        <div
+                            class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-start gap-3 text-rose-600">
+                            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <p class="text-xs font-bold">Akses Ditolak</p>
+                                <p class="text-xs mt-0.5 opacity-80">Permintaan akses Anda telah ditolak oleh
+                                    administrator. Silahkan hubungi administrator untuk informasi lebih lanjut.</p>
+                            </div>
+                        </div>
+                    @elseif (session('error') || request()->get('error'))
+                        <div
+                            class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center gap-3 text-rose-600">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
-                            <p class="text-xs font-semibold">Autentikasi gagal. Silahkan coba lagi.</p>
+                            <p class="text-xs font-semibold">
+                                {{ session('error') ?? 'Autentikasi gagal. Silahkan coba lagi.' }}</p>
                         </div>
                     @endif
 
                     <!-- Google Login Button -->
-                    <button id="btn-google-login"
+                    <a href="/v1/auth/google" id="btn-google-login"
                         class="w-full group relative flex items-center justify-center gap-3 px-6 py-4 bg-white dark:bg-slate-800 text-slate-700 dark:text-white font-bold rounded-2xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-slate-200/50 dark:shadow-none">
                         <svg class="w-6 h-6" viewBox="0 0 24 24">
                             <path
@@ -66,7 +96,7 @@
                         <div
                             class="absolute inset-0 rounded-2xl bg-blue-500/0 group-hover:bg-blue-500/5 transition-colors">
                         </div>
-                    </button>
+                    </a>
 
                     <div class="relative py-2">
                         <div class="absolute inset-0 flex items-center">

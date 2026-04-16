@@ -43,7 +43,7 @@
                         <tr>
                             <th class="px-6 py-4">Pengguna</th>
                             <th class="px-6 py-4">Role</th>
-                            <th class="px-6 py-4">Status</th>
+                            {{-- <th class="px-6 py-4">Status</th> --}}
                             <th class="px-6 py-4">Terdaftar</th>
                             <th class="px-6 py-4">Aksi</th>
                         </tr>
@@ -71,12 +71,7 @@
                                     {{ strtoupper($user->role ?? 'User') }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4">
-                                <span class="inline-flex items-center gap-1.5 px-2 py-1 text-[10px] font-bold text-emerald-600 bg-emerald-500/10 rounded-lg">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                    AKTIF
-                                </span>
-                            </td>
+                            
                             <td class="px-6 py-4 text-xs text-slate-500">
                                 {{ $user->created_at->diffForHumans() }}
                             </td>

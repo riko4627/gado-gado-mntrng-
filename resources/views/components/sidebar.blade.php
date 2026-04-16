@@ -31,6 +31,22 @@
                 👥 Pengguna
             </a>
 
+            @if (auth()->check() && auth()->user()->role === 'super_admin')
+                @php
+                    $pendingCount = \App\Models\User::where('status', 'pending')->count();
+                @endphp
+                <a href="{{ route('admin.approvals') }}"
+                    class="sidebar-link flex items-center justify-between {{ request()->is('admin/approvals') ? 'active' : '' }}">
+                    <span>🛡️ Persetujuan</span>
+                    @if ($pendingCount > 0)
+                        <span
+                            class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-amber-500 rounded-full animate-pulse">
+                            {{ $pendingCount }}
+                        </span>
+                    @endif
+                </a>
+            @endif
+
 
             <!-- MONITORING -->
             <div class="pt-4 mt-4 border-t border-white/5">
@@ -85,12 +101,12 @@
         <div class="p-4 mt-auto border-t border-white/5">
             <div class="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
                 <div
-                    class="w-8 h-8 bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs font-bold rounded-full">
-                    SA
+                    class="w-8 h-8 bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs font-bold rounded-full flex-shrink-0">
+                    {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 2)) }}
                 </div>
-                <div>
-                    <div class="text-xs font-semibold">Super Admin</div>
-                    <div class="text-[10px] text-white/50">Online</div>
+                <div class="min-w-0 flex-1">
+                    <div class="text-xs font-semibold truncate">{{ auth()->user()->name ?? 'Pengguna' }}</div>
+                    <div class="text-[10px] text-white/50 capitalize">{{ auth()->user()->role ?? 'user' }}</div>
                 </div>
             </div>
         </div>

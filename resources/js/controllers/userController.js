@@ -15,13 +15,13 @@ export const UserController = {
     submitBtn: null,
     passwordHint: null,
     userToDelete: null,
-    
+
     // AJAX elements
     tableBody: null,
     paginationContainer: null,
     searchInput: null,
     roleFilter: null,
-    
+
     // State
     currentPage: 1,
     searchQuery: '',
@@ -30,7 +30,7 @@ export const UserController = {
 
     init() {
         this.cacheDOM();
-        if (!this.form) return; 
+        if (!this.form) return;
         this.bindEvents();
     },
 
@@ -43,7 +43,7 @@ export const UserController = {
         this.modalTitle = document.getElementById('modal-title');
         this.submitBtn = document.getElementById('submit-btn');
         this.passwordHint = document.getElementById('password-hint');
-        
+
         // AJAX Hooks
         this.tableBody = document.getElementById('user-table-body');
         this.paginationContainer = document.getElementById('pagination-container');
@@ -106,17 +106,17 @@ export const UserController = {
         console.log('UserController: fetchUsers called');
         // Optional: show loading state
         this.tableBody.style.opacity = '0.5';
-        
+
         try {
             const params = {
                 search: this.searchQuery,
                 role: this.roleQuery,
                 page: this.currentPage
             };
-            
+
             const result = await UserService.getAll(params);
             console.log('UserController: UserService.getAll result', result);
-            
+
             if (result.code === 200) {
                 this.renderTable(result.data.data);
                 this.renderPagination(result.data);
@@ -143,7 +143,7 @@ export const UserController = {
         }
 
         const colors = ['blue', 'purple', 'emerald', 'orange', 'rose', 'amber'];
-        
+
         this.tableBody.innerHTML = users.map(user => {
             const userIdStr = String(user.id);
             const charCodeSum = userIdStr.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
@@ -168,12 +168,7 @@ export const UserController = {
                             ${(user.role || 'User').toUpperCase()}
                         </span>
                     </td>
-                    <td class="px-6 py-4">
-                        <span class="inline-flex items-center gap-1.5 px-2 py-1 text-[10px] font-bold text-emerald-600 bg-emerald-500/10 rounded-lg">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                            AKTIF
-                        </span>
-                    </td>
+                    
                     <td class="px-6 py-4 text-xs text-slate-500">
                         ${this.formatTime(user.created_at)}
                     </td>
@@ -198,16 +193,16 @@ export const UserController = {
 
     renderPagination(data) {
         const { current_page, last_page, total, from, to } = data;
-        
+
         this.paginationContainer.innerHTML = `
             <div class="px-6 py-4 bg-slate-50/50 dark:bg-slate-800/30 border-t border-slate-100 dark:divide-slate-800 flex items-center justify-between">
                 <span class="text-xs text-slate-500">Menampilkan ${from || 0} sampai ${to || 0} dari ${total} pengguna</span>
                 <div class="flex items-center gap-2">
-                    ${current_page > 1 
+                    ${current_page > 1
                         ? `<button data-page="${current_page - 1}" class="btn-page px-3 py-1 text-xs border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">Sebelumnya</button>`
                         : `<button class="px-3 py-1 text-xs border border-slate-200 dark:border-slate-800 rounded-lg opacity-50 cursor-not-allowed" disabled>Sebelumnya</button>`
                     }
-                    
+
                     ${current_page < last_page
                         ? `<button data-page="${current_page + 1}" class="btn-page px-3 py-1 text-xs border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">Berikutnya</button>`
                         : `<button class="px-3 py-1 text-xs border border-slate-200 dark:border-slate-800 rounded-lg opacity-50 cursor-not-allowed" disabled>Berikutnya</button>`
@@ -221,7 +216,7 @@ export const UserController = {
         const date = new Date(dateString);
         const now = new Date();
         const diff = Math.floor((now - date) / 1000);
-        
+
         if (diff < 60) return 'Baru saja';
         if (diff < 3600) return `${Math.floor(diff / 60)} menit yang lalu`;
         if (diff < 86400) return `${Math.floor(diff / 3600)} jam yang lalu`;
@@ -232,7 +227,7 @@ export const UserController = {
         this.modalTitle.innerText = editMode ? 'Edit Pengguna' : 'Tambah Pengguna';
         this.submitBtn.innerText = editMode ? 'Simpan Perubahan' : 'Simpan';
         this.passwordHint.classList.toggle('hidden', !editMode);
-        
+
         this.modal.classList.remove('pointer-events-none', 'opacity-0');
         this.modalContent.classList.remove('scale-95');
         this.modalContent.classList.add('scale-100');
@@ -299,12 +294,12 @@ export const UserController = {
 
         try {
             console.log('UserController: handleFormSubmit data', data);
-            const result = id 
-                ? await UserService.update(id, data) 
+            const result = id
+                ? await UserService.update(id, data)
                 : await UserService.create(data);
-            
+
             console.log('UserController: handleFormSubmit result', result);
-            
+
             if (result.code === 200) {
                 this.showToast(id ? 'User berhasil diperbarui' : 'User berhasil dibuat', 'success');
                 this.closeModal();
@@ -341,19 +336,19 @@ export const UserController = {
 
         const toast = document.createElement('div');
         const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-rose-500';
-        
+
         toast.className = `${bgColor} text-white px-6 py-3 rounded-xl shadow-xl transform translate-y-10 opacity-0 transition-all duration-500 flex items-center gap-3`;
         toast.innerHTML = `
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                ${type === 'success' 
+                ${type === 'success'
                     ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'
                     : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>'}
             </svg>
             <span class="text-sm font-medium">${message}</span>
         `;
-        
+
         container.appendChild(toast);
-        
+
         setTimeout(() => {
             toast.classList.remove('translate-y-10', 'opacity-0');
             toast.classList.add('translate-y-0', 'opacity-100');

@@ -59,5 +59,11 @@ class TemplateController extends Controller
     {
         return view('auth.callback');
     }
+
+    public function approvals(Request $request)
+    {
+        $appController = app(\App\Http\Controllers\CMS\ApprovalController::class);
+        return $appController->index($request);
+    }
 }
 

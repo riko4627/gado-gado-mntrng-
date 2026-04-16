@@ -30,33 +30,46 @@ class GoogleAuthController extends Controller
     }
 
     // Menangani kembalian (callback) dari Google
-   public function handleProviderCallback()
-{
-    try {
-        $socialUser = Socialite::driver('google')->stateless()->user();
+    public function handleProviderCallback()
+    {
+        try {
+            $socialUser = Socialite::driver('google')->stateless()->user();
 
-        // Ambil / buat user
-        $user = $this->authRepo->findOrCreateUser($socialUser, 'google');
+            // Ambil / buat user
+            $user = $this->authRepo->findOrCreateUser($socialUser, 'google');
 
-        // 🔥 login pakai session
-        Auth::login($user);
+            // ── User BARU (null) → disimpan sebagai pending ──────────────
+            if ($user === null) {
+                return redirect()->route('login')->with('status', 'pending');
+            }
 
-        // redirect ke dashboard
-        return redirect('/admin');
+            // ── User LAMA → cek status ───────────────────────────────────
+            if ($user->isPending()) {
+                return redirect()->route('login')->with('status', 'pending');
+            }
 
-    } catch (\Exception $e) {
-        dd($e->getMessage());
+            if ($user->isRejected()) {
+                return redirect()->route('login')->with('status', 'rejected');
+            }
+
+            // ── Status APPROVED → login ──────────────────────────────────
+            Auth::login($user);
+
+            return redirect('/admin');
+
+        } catch (\Exception $e) {
+            return redirect()->route('login')->with('error', 'Autentikasi gagal: ' . $e->getMessage());
+        }
     }
-}
 
-    // Logout dan hapus token
+    // Logout dan hapus session
     public function logout(Request $request)
-{
-    Auth::logout();
+    {
+        Auth::logout();
 
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-    return redirect('/login');
-}
+        return redirect('/login');
+    }
 }
