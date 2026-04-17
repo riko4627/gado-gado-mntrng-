@@ -20,6 +20,8 @@ class User extends Authenticatable
         'password',
         'google_id',
         'approved_at',
+        'google2fa_secret',
+        'google2fa_enabled',
     ];
 
     protected $hidden = [

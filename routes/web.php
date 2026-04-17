@@ -3,12 +3,16 @@
 use App\Http\Controllers\CMS\UserController;
 use App\Http\Controllers\CMS\ApprovalController;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\Auth\Verify2FAController;
 use App\Http\Controllers\TemplateController;
 use Illuminate\Support\Facades\Route;
 
 // =====================
 // PUBLIC (tidak perlu login)
 // =====================
+
+Route::get('/2fa/verify', [Verify2FAController::class, 'showVerifyForm'])->name('2fa.verify');
+Route::post('/2fa/verify', [Verify2FAController::class, 'verify']);
 
 Route::get('/', [TemplateController::class, 'home']);
 
