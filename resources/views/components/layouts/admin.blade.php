@@ -20,7 +20,7 @@
 
             <!-- Footer -->
             <footer class="p-6 text-center text-sm text-slate-500 border-t border-slate-200 dark:border-slate-800">
-                &copy; {{ date('Y') }} {{ config('app.name') }}. Built with ❤️ for Admin.
+                &copy; {{ date('Y') }} {{ config('app.name') }}. Ka_Tri | IT_Center.
             </footer>
         </div>
     </div>

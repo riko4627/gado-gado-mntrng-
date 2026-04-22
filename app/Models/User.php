@@ -16,12 +16,36 @@ class User extends Authenticatable
         'name',
         'email',
         'role',
+        'status',
         'password',
         'google_id',
+        'approved_at',
+        'google2fa_secret',
+        'google2fa_enabled',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
+    protected $casts = [
+        'approved_at' => 'datetime',
+    ];
+
+    // ── Helper Methods ──────────────────────────────────────────
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === 'approved';
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === 'rejected';
+    }
 }

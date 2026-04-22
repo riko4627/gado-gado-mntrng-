@@ -1,13 +1,21 @@
 <?php
 
 use App\Http\Controllers\CMS\UserController;
+use App\Http\Controllers\CMS\ApprovalController;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\Auth\Verify2FAController;
 use App\Http\Controllers\TemplateController;
 use Illuminate\Support\Facades\Route;
 
 // =====================
 // PUBLIC (tidak perlu login)
 // =====================
+
+Route::get('/2fa/verify', [Verify2FAController::class, 'showVerifyForm'])->name('2fa.verify');
+Route::post('/2fa/verify', [Verify2FAController::class, 'verify'])->name('2fa.verify.post');
+Route::get('/2fa/enable', function () {
+    return redirect()->route('2fa.setup');
+});
 
 Route::get('/', [TemplateController::class, 'home']);
 
@@ -29,6 +37,12 @@ Route::prefix('v1/auth')->controller(GoogleAuthController::class)->group(functio
 
 Route::middleware(['auth'])->group(function () {
 
+    // 2FA Setup Routes
+    Route::prefix('2fa')->controller(Verify2FAController::class)->group(function () {
+        Route::get('/setup', 'setup2FA')->name('2fa.setup');
+        Route::post('/enable', 'enable2FA')->name('2fa.enable');
+    });
+
     // Dashboard
     Route::get('/admin', [TemplateController::class, 'dashboard']);
 
@@ -36,6 +50,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/proyektor', [TemplateController::class, 'proyektor']);
     Route::get('/admin/kinexa', [TemplateController::class, 'kinexa']);
     Route::get('/admin/kinexa/summary', [TemplateController::class, 'kinexaSummary']);
+
+    // ─── Super Admin: Approval Management ──────────────────────────────────
+    Route::middleware(['role:super_admin'])->group(function () {
+        Route::get('/admin/approvals', [TemplateController::class, 'approvals'])->name('admin.approvals');
+    });
 
     Route::prefix('v1')->group(function () {
 
@@ -51,6 +70,12 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/get/{id}', 'getDataById');
             Route::post('/update/{id}', 'updateData');
             Route::delete('/delete/{id}', 'deleteData');
+        });
+
+        // ─── Super Admin: Approval Actions ─────────────────────────────────
+        Route::middleware(['role:super_admin'])->prefix('admin')->controller(ApprovalController::class)->group(function () {
+            Route::post('/approve/{id}', 'approve')->name('admin.approve');
+            Route::post('/reject/{id}', 'reject')->name('admin.reject');
         });
     });
 });
