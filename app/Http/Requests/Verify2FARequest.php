@@ -24,12 +24,7 @@ class Verify2FARequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(
-            response()->json([
-                'code'    => 422,
-                'status'  => 'validation_failed',
-                'message' => 'Check your input data',
-                'data'    => $validator->errors(),
-            ], 422)
+            back()->withErrors($validator)->withInput()
         );
     }
 }

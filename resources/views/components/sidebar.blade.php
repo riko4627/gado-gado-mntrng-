@@ -89,6 +89,10 @@
             <div class="pt-4 mt-4 border-t border-white/5">
                 <p class="px-4 mb-2 text-[10px] uppercase font-bold text-white/40 tracking-widest">Pengaturan</p>
 
+                <a href="/2fa/setup" class="sidebar-link {{ request()->is('2fa/setup') ? 'active' : '' }}">
+                    🔐 2FA {{ auth()->user()->google2fa_enabled ? '(Aktif)' : '(Setup)' }}
+                </a>
+
                 <a href="#" class="sidebar-link">
                     ⚙️ Sistem
                 </a>

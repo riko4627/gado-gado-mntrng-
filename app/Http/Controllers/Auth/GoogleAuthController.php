@@ -52,11 +52,15 @@ class GoogleAuthController extends Controller
                 return redirect()->route('login')->with('status', 'rejected');
             }
 
-            // ── Status APPROVED → login ──────────────────────────────────
+            // ── Status APPROVED → check 2FA ────────────────────────────────
+            if ($user->google2fa_enabled) {
+                // Set session untuk 2FA verify
+                session(['login_user_id' => $user->id]);
+                return redirect('/2fa/verify')->with('info', 'Verifikasi 2FA diperlukan.');
+            }
+
             Auth::login($user);
-
             return redirect('/admin');
-
         } catch (\Exception $e) {
             return redirect()->route('login')->with('error', 'Autentikasi gagal: ' . $e->getMessage());
         }

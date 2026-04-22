@@ -12,7 +12,10 @@ use Illuminate\Support\Facades\Route;
 // =====================
 
 Route::get('/2fa/verify', [Verify2FAController::class, 'showVerifyForm'])->name('2fa.verify');
-Route::post('/2fa/verify', [Verify2FAController::class, 'verify']);
+Route::post('/2fa/verify', [Verify2FAController::class, 'verify'])->name('2fa.verify.post');
+Route::get('/2fa/enable', function () {
+    return redirect()->route('2fa.setup');
+});
 
 Route::get('/', [TemplateController::class, 'home']);
 
@@ -33,6 +36,12 @@ Route::prefix('v1/auth')->controller(GoogleAuthController::class)->group(functio
 // =====================
 
 Route::middleware(['auth'])->group(function () {
+
+    // 2FA Setup Routes
+    Route::prefix('2fa')->controller(Verify2FAController::class)->group(function () {
+        Route::get('/setup', 'setup2FA')->name('2fa.setup');
+        Route::post('/enable', 'enable2FA')->name('2fa.enable');
+    });
 
     // Dashboard
     Route::get('/admin', [TemplateController::class, 'dashboard']);

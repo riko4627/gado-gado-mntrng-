@@ -6,8 +6,7 @@ use App\Interfaces\AuthInterfaces;
 use App\Interfaces\Verify2FAInterfaces;
 use App\Models\User;
 use Illuminate\Support\Str;
-use PragmaRX\Google2FA\Google2FA;
-
+use PragmaRX\Google2FAQRCode\Google2FA;
 
 class Verify2FARepositories implements Verify2FAInterfaces
 {
@@ -26,7 +25,7 @@ class Verify2FARepositories implements Verify2FAInterfaces
 
         session(['2fa_secret' => $secret]);
 
-        $qr = $this->google2fa->getQRCodeUrl(
+        $qrUrl = $this->google2fa->getQRCodeUrl(
             'Monitoring Sistem UWN',
             $user->email,
             $secret
@@ -34,7 +33,7 @@ class Verify2FARepositories implements Verify2FAInterfaces
 
         return [
             'secret' => $secret,
-            'qr' => $qr
+            'qr_url' => $qrUrl
         ];
     }
 
@@ -42,7 +41,13 @@ class Verify2FARepositories implements Verify2FAInterfaces
     {
         $secret = session('2fa_secret');
 
-        $valid = $this->google2fa->verifyKey($secret, $otp);
+        if (!$secret) {
+            return redirect()->route('2fa.setup')
+                ->with('error', 'Session expired, silakan scan ulang QR.');
+        }
+
+        // 🔥 kasih toleransi waktu (penting!)
+        $valid = $this->google2fa->verifyKey($secret, $otp, 2);
 
         if (!$valid) {
             return false;
@@ -52,6 +57,8 @@ class Verify2FARepositories implements Verify2FAInterfaces
             'google2fa_secret' => encrypt($secret),
             'google2fa_enabled' => true,
         ]);
+
+        session()->forget('2fa_secret');
 
         return true;
     }
