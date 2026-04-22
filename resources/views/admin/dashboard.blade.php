@@ -159,15 +159,7 @@
                     Memuat...
                 </div>
             </div>
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3" id="proyektor-grid">
-                @for($i = 0; $i < 3; $i++)
-                <div class="card-premium p-6 animate-pulse">
-                    <div class="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl mb-4"></div>
-                    <div class="h-3 w-20 bg-slate-100 dark:bg-slate-800 rounded mb-3"></div>
-                    <div class="h-8 w-12 bg-slate-100 dark:bg-slate-800 rounded"></div>
-                </div>
-                @endfor
-            </div>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3" id="proyektor-grid"></div>
         </div> --}}
 
         {{-- ═══════════════════════════════════════════════════
@@ -376,86 +368,5 @@
 
     </div>
 
-    {{-- ═══════════════════════════════════════════════════
-         SCRIPT: Fetch Proyektor Stats dari API Eksternal
-    ═══════════════════════════════════════════════════ --}}
-    <script>
-        async function fetchProyektorStats() {
-            const grid = document.getElementById('proyektor-grid');
-            const status = document.getElementById('proyektor-status');
-
-            try {
-                const response = await fetch('https://proyektor.uwn.ac.id/api/stats');
-                if (!response.ok) throw new Error('Gagal fetch API');
-
-                const json = await response.json();
-                const data = json.data || {};
-
-                const cards = [
-                    {
-                        id: 'total_proyektor',
-                        label: 'Total Proyektor',
-                        value: data.total_proyektor ?? 0,
-                        icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>`,
-                        bg: 'bg-indigo-500/10', text: 'text-indigo-600', glow: 'bg-indigo-500/5'
-                    },
-                    {
-                        id: 'total_proyektor_rusak',
-                        label: 'Proyektor Rusak',
-                        value: data.total_proyektor_rusak ?? 0,
-                        icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>`,
-                        bg: 'bg-rose-500/10', text: 'text-rose-600', glow: 'bg-rose-500/5'
-                    },
-                    {
-                        id: 'total_pengguna_proyektor',
-                        label: 'Pengguna Proyektor',
-                        value: data.total_pengguna ?? 0,
-                        icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>`,
-                        bg: 'bg-cyan-500/10', text: 'text-cyan-600', glow: 'bg-cyan-500/5'
-                    }
-                ];
-
-                grid.innerHTML = cards.map(card => `
-                    <div class="card-premium p-6 flex flex-col gap-4 relative overflow-hidden group">
-                        <div class="flex items-center justify-between relative z-10">
-                            <div class="p-2.5 ${card.bg} ${card.text} rounded-xl">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    ${card.icon}
-                                </svg>
-                            </div>
-                            <span class="text-[10px] font-bold ${card.text} ${card.bg} px-2 py-0.5 rounded-full">Proyektor</span>
-                        </div>
-                        <div class="relative z-10">
-                            <p class="text-sm font-medium text-slate-600 dark:text-slate-400">${card.label}</p>
-                            <h3 class="text-3xl font-bold text-slate-900 dark:text-white">${card.value.toLocaleString('id-ID')}</h3>
-                        </div>
-                        <div class="absolute -right-4 -bottom-4 w-24 h-24 ${card.glow} rounded-full blur-2xl group-hover:opacity-150 transition-colors"></div>
-                    </div>
-                `).join('');
-
-                status.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Terhubung`;
-                status.className = 'flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600';
-
-            } catch (error) {
-                console.error('Proyektor API error:', error);
-                grid.innerHTML = `
-                    <div class="sm:col-span-3 card-premium p-6 flex items-center gap-4 border-rose-500/20 bg-rose-500/5">
-                        <div class="p-3 bg-rose-500/10 text-rose-600 rounded-xl flex-shrink-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm font-bold text-rose-600">Gagal Memuat Data Proyektor</p>
-                            <p class="text-xs text-slate-500 mt-0.5">Sistem proyektor mungkin sedang offline. <button onclick="fetchProyektorStats()" class="text-blue-600 underline hover:no-underline">Coba lagi</button></p>
-                        </div>
-                    </div>
-                `;
-                status.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500"></span> Offline`;
-                status.className = 'flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-rose-500';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', fetchProyektorStats);
-    </script>
 </x-layouts.admin>
+
