@@ -33,7 +33,7 @@ export const AuthService = {
             console.error('Logout error:', error);
         } finally {
             // Selalu redirect ke login, baik request berhasil maupun gagal
-            window.location.href = '/login';
+            window.location.href = '/gado-gado/01/login';
         }
     },
 

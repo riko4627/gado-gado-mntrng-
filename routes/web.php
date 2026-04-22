@@ -19,7 +19,7 @@ Route::get('/2fa/enable', function () {
 
 Route::get('/', [TemplateController::class, 'home']);
 
-Route::get('/login', [TemplateController::class, 'login'])->name('login');
+Route::get('/gado-gado/01/login', [TemplateController::class, 'login'])->name('login');
 
 // (opsional, bisa dihapus kalau sudah tidak dipakai)
 Route::get('/auth/callback', [TemplateController::class, 'authCallback']);

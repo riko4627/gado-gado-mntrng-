@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Models\User;
 use App\Repositories\UserRepositories;
 use App\Repositories\KinexaRepositories;
 
@@ -25,7 +25,30 @@ class TemplateController extends Controller
 
     public function dashboard()
     {
-        return view('admin.dashboard');
+        // Statistik nyata dari database
+        $stats = [
+            'total_users'    => User::count(),
+            'approved_users' => User::where('status', 'approved')->count(),
+            'pending_users'  => User::where('status', 'pending')->count(),
+            'rejected_users' => User::where('status', 'rejected')->count(),
+            'super_admins'   => User::where('role', 'super_admin')->count(),
+            'admins'         => User::where('role', 'admin')->count(),
+            'users'          => User::where('role', 'user')->count(),
+        ];
+
+        // 5 user terbaru yang sudah approved
+        $recentUsers = User::where('status', 'approved')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        // User pending yang menunggu persetujuan
+        $pendingUsers = User::where('status', 'pending')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('admin.dashboard', compact('stats', 'recentUsers', 'pendingUsers'));
     }
 
     public function users(Request $request)
@@ -66,4 +89,5 @@ class TemplateController extends Controller
         return $appController->index($request);
     }
 }
+
 
