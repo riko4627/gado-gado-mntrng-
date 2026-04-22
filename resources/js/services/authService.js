@@ -1,6 +1,7 @@
 /**
  * AuthService.js
- * Handles authentication logic, tokens, and Google OAuth redirection.
+ * Handles authentication logic and Google OAuth redirection.
+ * Menggunakan session-based auth (bukan token), sesuai dengan backend Laravel.
  */
 
 export const AuthService = {
@@ -12,52 +13,37 @@ export const AuthService = {
     },
 
     /**
-     * Store the Sanctum token securely in localStorage.
-     * @param {string} token 
-     */
-    handleToken(token) {
-        if (token) {
-            localStorage.setItem('auth_token', token);
-            return true;
-        }
-        return false;
-    },
-
-    /**
-     * Retrieve the stored token.
-     */
-    getToken() {
-        return localStorage.getItem('auth_token');
-    },
-
-    /**
-     * Remove the token and logout.
+     * Logout user dengan mengirim POST request ke backend
+     * agar session Laravel dihancurkan dengan benar.
      */
     async logout() {
         try {
-            const token = this.getToken();
-            if (token) {
-                // Beritahu backend untuk mencabut token
-                await fetch('/v1/auth/logout', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json'
-                    }
-                });
-            }
+            // Ambil CSRF token dari meta tag
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            await fetch('/v1/auth/logout', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
         } catch (error) {
             console.error('Logout error:', error);
         } finally {
-            localStorage.removeItem('auth_token');
+            // Selalu redirect ke login, baik request berhasil maupun gagal
             window.location.href = '/login';
         }
     },
 
     /**
-     * Check if user is authenticated.
+     * Check if user is authenticated (berdasarkan keberadaan session cookie).
+     * Karena kita pakai session-based auth, cukup cek via fetch ke endpoint yang protected.
+     * Untuk keperluan sederhana, kita bisa cek keberadaan elemen DOM yang hanya ada saat login.
      */
     isAuthenticated() {
-        return !!this.getToken();
+        // Cek berdasarkan elemen DOM (misal tombol logout yang hanya ada saat login)
+        return !!document.getElementById('btn-logout');
     }
 };
